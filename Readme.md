@@ -1,6 +1,6 @@
 ## Spring Boot WebSocket Chat Appplication
-- Đã edit lại giao diện và code; chưa có DB lấy lịch sử chat
-- Test OK
+1. Đã edit lại giao diện và code; chưa có DB lấy lịch sử chat
+2. Test OK
 
 ![App Screenshot](screenshot.png)
 
@@ -10,15 +10,7 @@
 
 2. Maven - 3.x.x
 
-## Steps to Setup
-
-**1. Clone the application**
-
-```bash
-git clone https://github.com/callicoder/spring-boot-websocket-chat-demo.git
-```
-
-**2. Build and run the app using maven**
+**1. Build and run the app using maven**
 
 ```bash
 cd spring-boot-websocket-chat
