@@ -1,6 +1,6 @@
 ## Spring Boot WebSocket Chat Appplication
-
-You can checkout the live version of the application at https://spring-ws-chat.herokuapp.com/
+- Đã edit lại giao diện và code; chưa có DB lấy lịch sử chat
+- Test OK
 
 ![App Screenshot](screenshot.png)
 
@@ -21,7 +21,7 @@ git clone https://github.com/callicoder/spring-boot-websocket-chat-demo.git
 **2. Build and run the app using maven**
 
 ```bash
-cd spring-boot-websocket-chat-demo
+cd spring-boot-websocket-chat
 mvn package
 java -jar target/websocket-demo-0.0.1-SNAPSHOT.jar
 ```
