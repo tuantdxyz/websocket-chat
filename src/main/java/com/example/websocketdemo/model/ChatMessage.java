@@ -8,10 +8,18 @@ public class ChatMessage {
     private String content;
     private String sender;
 
+    public ChatMessage(String content) {
+        this.content = content;
+    }
+
+    public ChatMessage() {
+    }
+
     public enum MessageType {
         CHAT,
         JOIN,
-        LEAVE
+        LEAVE,
+        HISTORY
     }
 
     public MessageType getType() {

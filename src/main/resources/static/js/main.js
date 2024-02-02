@@ -10,6 +10,7 @@ var connectingElement = document.querySelector('.connecting');
 
 var stompClient = null;
 var username = null;
+var password = null;
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -18,8 +19,11 @@ var colors = [
 
 function connect(event) {
     username = document.querySelector('#name').value.trim();
-
-    if(username) {
+    password = document.querySelector('#password').value.trim();
+//    console.log("pw:", password);
+//    console.log("us:", username);
+    if(username && password === "011223") {
+//        localStorage.setItem('username', username);
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
@@ -27,7 +31,10 @@ function connect(event) {
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, onConnected, onError);
+    }else {
+        alert("Invalid username or password. Please try again.");
     }
+
     event.preventDefault();
 }
 
@@ -36,15 +43,27 @@ function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
 
+//    stompClient.subscribe('/user/topic/history', onHistoryReceived);
+
     // Tell your username to the server
     stompClient.send("/app/chat.addUser",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
 
+    // Load chat history after connecting
+    loadChatHistory();      // get lich su chat khi nhap username
+
     connectingElement.classList.add('hidden');
 }
 
+function loadChatHistory() {
+    // Subscribe to the history topic for the current user
+    stompClient.subscribe('/user/topic/history', onHistoryReceived);
+
+    // Request the server to send the chat history
+    stompClient.send("/app/chat.requestHistory", {});
+}
 
 function onError(error) {
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
@@ -70,6 +89,7 @@ function sendMessage(event) {
 
 
 function onMessageReceived(payload) {
+    console.log("onMessageReceived payload:", payload);
     var message = JSON.parse(payload.body);
 
     var messageElement = document.createElement('li');
@@ -103,6 +123,45 @@ function onMessageReceived(payload) {
     messageElement.appendChild(textElement);
 
     messageArea.appendChild(messageElement);
+    messageArea.scrollTop = messageArea.scrollHeight;
+}
+
+function onHistoryReceived(payload) {
+    console.log("onHistoryReceived:", payload);
+    //TODO
+    var chatHistory = JSON.parse(payload.body);
+
+    chatHistory.forEach(function (message) {
+        var messageElement = document.createElement('li');
+
+        if (message.type === 'JOIN' || message.type === 'LEAVE') {
+            messageElement.classList.add('event-message');
+            message.content = message.sender + ' ' + (message.type === 'JOIN' ? 'joined!' : 'left!');
+        } else {
+            messageElement.classList.add('chat-message');
+
+            var avatarElement = document.createElement('i');
+            var avatarText = document.createTextNode(message.sender[0]);
+            avatarElement.appendChild(avatarText);
+            avatarElement.style['background-color'] = getAvatarColor(message.sender);
+
+            messageElement.appendChild(avatarElement);
+
+            var usernameElement = document.createElement('span');
+            var usernameText = document.createTextNode(message.sender);
+            usernameElement.appendChild(usernameText);
+            messageElement.appendChild(usernameElement);
+        }
+
+        var textElement = document.createElement('p');
+        var messageText = document.createTextNode(message.content);
+        textElement.appendChild(messageText);
+
+        messageElement.appendChild(textElement);
+
+        messageArea.appendChild(messageElement);
+    });
+
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
